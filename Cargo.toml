@@ -1,0 +1,8 @@
+[package]
+name = "PageShot"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+headless_chrome = "1.0.10"
+tokio = { version = "1.39.1", features = ["full"] }
