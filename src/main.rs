@@ -11,19 +11,19 @@ use headless_chrome::{
 #[derive(Parser)]
 #[clap(author, version, about)]
 struct Args {
-    /// URL para capturar a screenshot
+    /// URL to capture the screenshot
     #[arg(short, long)]
     url: String,
 
-    /// Largura da viewport
+    /// Width of the viewport
     #[arg(long, default_value_t = 1920)]
     width: u32,
 
-    /// Altura da viewport
+    /// Height of the viewport
     #[arg(long, default_value_t = 1080)]
     height: u32,
 
-    /// Nome do arquivo de saída
+    /// Output file name
     #[arg(short, long, default_value = "screenshot.png")]
     output: String,
 }
