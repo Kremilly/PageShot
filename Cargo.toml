@@ -1,9 +1,10 @@
 [package]
-name = "PageShot"
+name = "pageshot"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 anyhow = "1.0.86"
+clap = { version = "4.5.10", features = ["cargo", "derive"] }
 headless_chrome = "1.0.10"
 tokio = { version = "1.39.1", features = ["full"] }
