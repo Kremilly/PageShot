@@ -134,6 +134,17 @@ fn main() -> Result<()> {
         true
     )?;
 
+    // Check for empty screenshot data (indicates capture failure)
+    if screenshot_data.is_empty() {
+        anyhow::bail!(
+            "Screenshot capture failed (empty data). This may happen with very large dimensions. \
+             Try reducing scale factor or viewport size. Current: {}x{} at {}x scale = {}x{} pixels",
+            final_width, final_height, scale,
+            (final_width as f64 * scale) as u32,
+            (final_height as f64 * scale) as u32
+        );
+    }
+
     fs::write(&args.output, screenshot_data)?;
 
     println!("Screenshot successfully created.");
