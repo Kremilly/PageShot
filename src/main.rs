@@ -26,6 +26,10 @@ struct Args {
     /// Output file name
     #[arg(short, long, default_value = "screenshot.png")]
     output: String,
+
+    /// Capture full page screenshot (beyond viewport)
+    #[arg(short, long)]
+    full_page: bool,
 }
 
 fn main() -> Result<()> {
@@ -40,11 +44,47 @@ fn main() -> Result<()> {
 
     let browser = Browser::new(options)?;
     let tab = browser.new_tab()?;
-    
-    let screenshot_data = tab
-        .navigate_to(&args.url)?
-        .wait_until_navigated()?
-        .capture_screenshot(CaptureScreenshotFormatOption::Png, None, None, true)?;
+
+    tab.navigate_to(&args.url)?
+        .wait_until_navigated()?;
+
+    let screenshot_data = if args.full_page {
+        // Get full page dimensions
+        let full_width = tab.evaluate(
+            "Math.max(document.body.scrollWidth, document.documentElement.scrollWidth)",
+            false
+        )?.value.unwrap().as_f64().unwrap() as u32;
+
+        let full_height = tab.evaluate(
+            "Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)",
+            false
+        )?.value.unwrap().as_f64().unwrap() as u32;
+
+        // Set viewport to full page dimensions
+        tab.set_bounds(headless_chrome::types::Bounds::Normal {
+            left: Some(0),
+            top: Some(0),
+            width: Some(full_width as f64),
+            height: Some(full_height as f64),
+        })?;
+
+        // Give the page a moment to adjust to new dimensions
+        std::thread::sleep(std::time::Duration::from_millis(500));
+
+        tab.capture_screenshot(
+            CaptureScreenshotFormatOption::Png,
+            None,
+            None,
+            true
+        )?
+    } else {
+        tab.capture_screenshot(
+            CaptureScreenshotFormatOption::Png,
+            None,
+            None,
+            true
+        )?
+    };
 
     fs::write(&args.output, screenshot_data)?;
 

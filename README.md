@@ -6,6 +6,7 @@ Capture screenshots of web pages from specified URL using Rust. Customize viewpo
 
 - Capture screenshots from any URL.
 - Customize viewport width and height.
+- Full-page screenshots that capture entire scrollable content.
 - Save screenshots in PNG format.
 - Simple command-line interface.
 
@@ -23,6 +24,9 @@ Run the compiled binary with the desired URL, viewport dimensions, and output fi
 
 ```sh
 pageshot -u https://example.com --width 1920 --height 1080 -o example.png
+
+# Capture full-page screenshot (entire scrollable content)
+pageshot -u https://example.com -f -o example_fullpage.png
 ```
 
 ### Arguments
@@ -31,6 +35,7 @@ pageshot -u https://example.com --width 1920 --height 1080 -o example.png
 - `--width <WIDTH>`: The width of the viewport (default: 1920).
 - `--height <HEIGHT>`: The height of the viewport (default: 1080).
 - `-o, --output <FILE>`: The name of the output file (default: `screenshot.png`).
+- `-f, --full-page`: Capture the entire scrollable page content, not just the viewport.
 
 ## License
 
