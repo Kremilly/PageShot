@@ -66,8 +66,8 @@ fn main() -> Result<()> {
         None
     };
 
-    // Clamp scale factor to valid range (1.0 to 4.0)
-    let scale = args.scale.clamp(1.0, 4.0);
+    // Clamp scale factor to valid range (1.0 to 3.0)
+    let scale = args.scale.clamp(1.0, 3.0);
 
     let mut options = LaunchOptions::default_builder()
         .headless(true)
