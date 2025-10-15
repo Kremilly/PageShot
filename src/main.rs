@@ -104,25 +104,23 @@ fn main() -> Result<()> {
         (args.width, args.height)
     };
 
-    // Set device scale factor if not default, using final dimensions
-    if scale != 1.0 {
-        tab.call_method(Emulation::SetDeviceMetricsOverride {
-            width: final_width,
-            height: final_height,
-            device_scale_factor: scale,
-            mobile: false,
-            scale: None,
-            screen_width: None,
-            screen_height: None,
-            position_x: None,
-            position_y: None,
-            dont_set_visible_size: None,
-            screen_orientation: None,
-            viewport: None,
-            display_feature: None,
-            device_posture: None,
-        })?;
-    }
+    // Set device metrics to ensure exact viewport dimensions
+    tab.call_method(Emulation::SetDeviceMetricsOverride {
+        width: final_width,
+        height: final_height,
+        device_scale_factor: scale,
+        mobile: false,
+        scale: None,
+        screen_width: None,
+        screen_height: None,
+        position_x: None,
+        position_y: None,
+        dont_set_visible_size: None,
+        screen_orientation: None,
+        viewport: None,
+        display_feature: None,
+        device_posture: None,
+    })?;
 
     // Give the page a moment to adjust if we resized
     if args.full_page {
