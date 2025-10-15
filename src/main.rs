@@ -3,9 +3,10 @@ use clap::Parser;
 use anyhow::Result;
 
 use headless_chrome::{
-    Browser, 
+    Browser,
     LaunchOptions,
-    protocol::cdp::Page::CaptureScreenshotFormatOption, 
+    protocol::cdp::Page::CaptureScreenshotFormatOption,
+    protocol::cdp::Emulation,
 };
 
 #[derive(Parser)]
@@ -38,11 +39,15 @@ struct Args {
     /// Quality for JPEG/WebP (0-100, higher is better quality)
     #[arg(long, default_value_t = 85)]
     quality: u8,
+
+    /// Device scale factor / pixel ratio (1.0 = standard, 2.0 = Retina 2x, 3.0 = 3x)
+    #[arg(long, default_value_t = 1.0)]
+    scale: f64,
 }
 
 fn main() -> Result<()> {
     let args = Args::parse();
-    
+
     // Parse format and quality
     let format = match args.format.to_lowercase().as_str() {
         "jpeg" | "jpg" => CaptureScreenshotFormatOption::Jpeg,
@@ -57,6 +62,9 @@ fn main() -> Result<()> {
         None
     };
 
+    // Clamp scale factor to valid range (1.0 to 4.0)
+    let scale = args.scale.clamp(1.0, 4.0);
+
     let mut options = LaunchOptions::default_builder()
         .headless(true)
         .build()
@@ -70,7 +78,8 @@ fn main() -> Result<()> {
     tab.navigate_to(&args.url)?
         .wait_until_navigated()?;
 
-    let screenshot_data = if args.full_page {
+    // Determine final dimensions based on full_page flag
+    let (final_width, final_height) = if args.full_page {
         // Get full page dimensions
         let full_width = tab.evaluate(
             "Math.max(document.body.scrollWidth, document.documentElement.scrollWidth)",
@@ -90,23 +99,42 @@ fn main() -> Result<()> {
             height: Some(full_height as f64),
         })?;
 
-        // Give the page a moment to adjust to new dimensions
-        std::thread::sleep(std::time::Duration::from_millis(500));
-
-        tab.capture_screenshot(
-            format,
-            quality,
-            None,
-            true
-        )?
+        (full_width, full_height)
     } else {
-        tab.capture_screenshot(
-            format,
-            quality,
-            None,
-            true
-        )?
+        (args.width, args.height)
     };
+
+    // Set device scale factor if not default, using final dimensions
+    if scale != 1.0 {
+        tab.call_method(Emulation::SetDeviceMetricsOverride {
+            width: final_width,
+            height: final_height,
+            device_scale_factor: scale,
+            mobile: false,
+            scale: None,
+            screen_width: None,
+            screen_height: None,
+            position_x: None,
+            position_y: None,
+            dont_set_visible_size: None,
+            screen_orientation: None,
+            viewport: None,
+            display_feature: None,
+            device_posture: None,
+        })?;
+    }
+
+    // Give the page a moment to adjust if we resized
+    if args.full_page {
+        std::thread::sleep(std::time::Duration::from_millis(500));
+    }
+
+    let screenshot_data = tab.capture_screenshot(
+        format,
+        quality,
+        None,
+        true
+    )?;
 
     fs::write(&args.output, screenshot_data)?;
 
