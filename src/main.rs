@@ -43,6 +43,10 @@ struct Args {
     /// Device scale factor / pixel ratio (1.0 = standard, 2.0 = Retina 2x, 3.0 = 3x)
     #[arg(long, default_value_t = 1.0)]
     scale: f64,
+
+    /// Suppress success message
+    #[arg(short, long)]
+    silent: bool,
 }
 
 fn main() -> Result<()> {
@@ -153,6 +157,9 @@ fn main() -> Result<()> {
 
     fs::write(&args.output, screenshot_data)?;
 
-    println!("Screenshot successfully created.");
+    if !args.silent {
+        println!("Screenshot saved to: {}", args.output);
+    }
+
     Ok(())
 }

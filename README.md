@@ -44,6 +44,9 @@ pageshot -u https://example.com --width 800 --height 600 --scale 2.0 -o retina_2
 
 # Ultra HD 3x resolution for maximum clarity
 pageshot -u https://example.com --scale 3.0 -o ultra_hd_3x.png
+
+# Silent mode for scripts (no output, only exit code)
+pageshot -u https://example.com -s -o screenshot.png
 ```
 
 ### Arguments
@@ -56,6 +59,7 @@ pageshot -u https://example.com --scale 3.0 -o ultra_hd_3x.png
 - `--format <FORMAT>`: Output format - `png`, `jpeg`, or `webp` (default: `png`).
 - `--quality <QUALITY>`: Quality for JPEG/WebP, 0-100 where higher is better (default: 85).
 - `--scale <SCALE>`: Device scale factor / pixel ratio (default: 1.0). Use 2.0 for Retina 2x, 3.0 for 3x.
+- `-s, --silent`: Suppress success message. Useful for scripts and automation.
 
 ### Format Recommendations
 
