@@ -41,12 +41,12 @@ fn main() -> Result<()> {
     let browser = Browser::new(options)?;
     let tab = browser.new_tab()?;
     
-    let png_data = tab
+    let screenshot_data = tab
         .navigate_to(&args.url)?
         .wait_until_navigated()?
         .capture_screenshot(CaptureScreenshotFormatOption::Png, None, None, true)?;
 
-    fs::write(&args.output, png_data)?;
+    fs::write(&args.output, screenshot_data)?;
 
     println!("Screenshot successfully created.");
     Ok(())
