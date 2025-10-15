@@ -68,7 +68,7 @@ fn main() -> Result<()> {
     let mut options = LaunchOptions::default_builder()
         .headless(true)
         .build()
-        .expect("Couldn't find appropriate Chrome binary.");
+        .map_err(|_| anyhow::anyhow!("Couldn't find appropriate Chrome binary."))?;
 
     options.window_size = Some((args.width, args.height));
 
