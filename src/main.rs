@@ -30,10 +30,32 @@ struct Args {
     /// Capture full page screenshot (beyond viewport)
     #[arg(short, long)]
     full_page: bool,
+
+    /// Output format: png, jpeg, or webp
+    #[arg(long, default_value = "png")]
+    format: String,
+
+    /// Quality for JPEG/WebP (0-100, higher is better quality)
+    #[arg(long, default_value_t = 85)]
+    quality: u8,
 }
 
 fn main() -> Result<()> {
     let args = Args::parse();
+    
+    // Parse format and quality
+    let format = match args.format.to_lowercase().as_str() {
+        "jpeg" | "jpg" => CaptureScreenshotFormatOption::Jpeg,
+        "webp" => CaptureScreenshotFormatOption::Webp,
+        _ => CaptureScreenshotFormatOption::Png,
+    };
+
+    // Quality only applies to JPEG and WebP, clamp to valid range
+    let quality = if matches!(format, CaptureScreenshotFormatOption::Jpeg | CaptureScreenshotFormatOption::Webp) {
+        Some(args.quality.clamp(0, 100) as u32)
+    } else {
+        None
+    };
 
     let mut options = LaunchOptions::default_builder()
         .headless(true)
@@ -72,15 +94,15 @@ fn main() -> Result<()> {
         std::thread::sleep(std::time::Duration::from_millis(500));
 
         tab.capture_screenshot(
-            CaptureScreenshotFormatOption::Png,
-            None,
+            format,
+            quality,
             None,
             true
         )?
     } else {
         tab.capture_screenshot(
-            CaptureScreenshotFormatOption::Png,
-            None,
+            format,
+            quality,
             None,
             true
         )?

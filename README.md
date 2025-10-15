@@ -7,7 +7,8 @@ Capture screenshots of web pages from specified URL using Rust. Customize viewpo
 - Capture screenshots from any URL.
 - Customize viewport width and height.
 - Full-page screenshots that capture entire scrollable content.
-- Save screenshots in PNG format.
+- Multiple output formats: PNG, JPEG, WebP.
+- Quality control for JPEG and WebP formats.
 - Simple command-line interface.
 
 ## Installation
@@ -27,6 +28,15 @@ pageshot -u https://example.com --width 1920 --height 1080 -o example.png
 
 # Capture full-page screenshot (entire scrollable content)
 pageshot -u https://example.com -f -o example_fullpage.png
+
+# JPEG format with quality control (smaller file size)
+pageshot -u https://example.com --format jpeg --quality 85 -o example.jpg
+
+# WebP format for best compression
+pageshot -u https://example.com --format webp --quality 90 -o example.webp
+
+# Full-page JPEG with lower quality for smaller file size
+pageshot -u https://example.com -f --format jpeg --quality 70 -o fullpage.jpg
 ```
 
 ### Arguments
@@ -36,6 +46,14 @@ pageshot -u https://example.com -f -o example_fullpage.png
 - `--height <HEIGHT>`: The height of the viewport (default: 1080).
 - `-o, --output <FILE>`: The name of the output file (default: `screenshot.png`).
 - `-f, --full-page`: Capture the entire scrollable page content, not just the viewport.
+- `--format <FORMAT>`: Output format - `png`, `jpeg`, or `webp` (default: `png`).
+- `--quality <QUALITY>`: Quality for JPEG/WebP, 0-100 where higher is better (default: 85).
+
+### Format Recommendations
+
+- **PNG**: Lossless quality, best for documentation and pixel-perfect captures. Larger file size.
+- **JPEG**: Good for general web captures. Use quality 70-85 for balanced size/quality, 90-100 for high quality.
+- **WebP**: Modern format with best compression. Recommended for sharing and storage efficiency.
 
 ## License
 
