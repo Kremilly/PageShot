@@ -84,12 +84,18 @@ fn main() -> Result<()> {
         let full_width = tab.evaluate(
             "Math.max(document.body.scrollWidth, document.documentElement.scrollWidth)",
             false
-        )?.value.unwrap().as_f64().unwrap() as u32;
+        )?
+        .value
+        .and_then(|v| v.as_f64())
+        .ok_or_else(|| anyhow::anyhow!("Failed to get page width from JavaScript evaluation"))? as u32;
 
         let full_height = tab.evaluate(
             "Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)",
             false
-        )?.value.unwrap().as_f64().unwrap() as u32;
+        )?
+        .value
+        .and_then(|v| v.as_f64())
+        .ok_or_else(|| anyhow::anyhow!("Failed to get page height from JavaScript evaluation"))? as u32;
 
         // Set viewport to full page dimensions
         tab.set_bounds(headless_chrome::types::Bounds::Normal {
