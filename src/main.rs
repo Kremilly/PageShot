@@ -32,6 +32,7 @@ fn main() -> Result<()> {
     let args = Args::parse();
 
     let mut options = LaunchOptions::default_builder()
+        .headless(true)
         .build()
         .expect("Couldn't find appropriate Chrome binary.");
 
